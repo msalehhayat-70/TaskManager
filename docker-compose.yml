@@ -1,0 +1,17 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# docker-compose.yml — DUMMY (not needed for local development)
+#
+# This project uses SQLite as its database, so Docker is NOT required.
+# To run locally without Docker, use:
+#
+#   cd src
+#   dotnet run
+#
+# The app will be available at http://localhost:5000
+# A SQLite file (taskmanager.db) will be auto-created on first run.
+#
+# Default login: admin@taskmanager.com / Admin@123
+# ──────────────────────────────────────────────────────────────────────────────
+version: "3.9"
+
+# No services defined — run with: dotnet run (inside the src/ folder)

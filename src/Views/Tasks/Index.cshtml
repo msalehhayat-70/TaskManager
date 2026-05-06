@@ -1,0 +1,81 @@
+@model List<TaskManager.Models.ProjectTask>
+@{ ViewData["Title"] = "Tasks"; Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+<div class="page-header">
+    <div>
+        <div class="page-title">All Tasks</div>
+        <div class="page-subtitle">@Model.Count task(s) total</div>
+    </div>
+    <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus"></i> New Task</a>
+</div>
+
+<div class="card">
+@if (Model.Any())
+{
+<table class="data-table">
+<thead>
+    <tr>
+        <th>Task</th>
+        <th>Project</th>
+        <th>Assigned To</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Due Date</th>
+        <th style="text-align:right;">Actions</th>
+    </tr>
+</thead>
+<tbody>
+@foreach (var t in Model)
+{
+    var priClass = t.Priority == TaskManager.Models.TaskPriority.High ? "badge-high" :
+                   t.Priority == TaskManager.Models.TaskPriority.Low  ? "badge-low" : "badge-medium";
+    var stClass  = t.Status == TaskManager.Models.TaskStatus.Done       ? "badge-done" :
+                   t.Status == TaskManager.Models.TaskStatus.InProgress ? "badge-progress" :
+                   t.Status == TaskManager.Models.TaskStatus.Cancelled  ? "badge-cancelled" : "badge-todo";
+    var isOverdue = t.DueDate < DateTime.UtcNow && t.Status != TaskManager.Models.TaskStatus.Done;
+<tr>
+    <td><a asp-action="Details" asp-route-id="@t.Id" class="task-link">@t.Title</a></td>
+    <td style="color:#64748b;font-size:0.82rem;">@(t.Project?.Name ?? "—")</td>
+    <td style="font-size:0.82rem;">
+        @if (t.AssignedTo != null)
+        {
+            <div style="display:flex;align-items:center;gap:7px;">
+                <div style="width:24px;height:24px;border-radius:50%;background:#3b82f6;color:white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">@t.AssignedTo.FullName[0]</div>
+                @t.AssignedTo.FullName
+            </div>
+        }
+        else { <span style="color:#94a3b8;">Unassigned</span> }
+    </td>
+    <td><span class="badge @priClass">@t.Priority</span></td>
+    <td><span class="badge @stClass">@t.Status</span></td>
+    <td class="@(isOverdue ? "overdue" : "")" style="font-size:0.82rem;">
+        @if (t.DueDate.HasValue)
+        {
+            @t.DueDate.Value.ToString("MMM dd, yyyy")
+            if (isOverdue) { <span style="margin-left:4px;font-size:0.7rem;">⚠</span> }
+        }
+        else { <span style="color:#94a3b8;">—</span> }
+    </td>
+    <td style="text-align:right;">
+        <div style="display:flex;justify-content:flex-end;gap:6px;">
+            <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-sm btn-outline"><i class="fas fa-pen"></i></a>
+            <form asp-action="Delete" asp-route-id="@t.Id" method="post" style="display:inline;"
+                  onsubmit="return confirm('Delete this task?')">
+                <button type="submit" class="btn btn-sm btn-danger-outline"><i class="fas fa-trash"></i></button>
+            </form>
+        </div>
+    </td>
+</tr>
+}
+</tbody>
+</table>
+}
+else
+{
+    <div class="empty-state">
+        <i class="fas fa-clipboard-list"></i>
+        <p style="font-weight:600;margin-bottom:8px;">No tasks yet</p>
+        <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus"></i> Create your first task</a>
+    </div>
+}
+</div>

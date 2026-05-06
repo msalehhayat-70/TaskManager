@@ -1,0 +1,75 @@
+@model TaskManager.Models.ProjectTask
+@{ ViewData["Title"] = "Task Details"; Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+@{
+    var priClass = Model.Priority == TaskManager.Models.TaskPriority.High ? "badge-high" :
+                   Model.Priority == TaskManager.Models.TaskPriority.Low  ? "badge-low" : "badge-medium";
+    var stClass  = Model.Status == TaskManager.Models.TaskStatus.Done       ? "badge-done" :
+                   Model.Status == TaskManager.Models.TaskStatus.InProgress ? "badge-progress" :
+                   Model.Status == TaskManager.Models.TaskStatus.Cancelled  ? "badge-cancelled" : "badge-todo";
+}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Task Details</div>
+        <div class="page-subtitle">View full task information</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline"><i class="fas fa-pen"></i> Edit</a>
+        <a href="/Tasks/Index" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+</div>
+
+<div style="max-width:640px;">
+<div class="card" style="padding:4px 0;">
+    <div style="padding:20px 24px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;">
+        <h2 style="font-size:1.1rem;font-weight:700;">@Model.Title</h2>
+        <div style="display:flex;gap:6px;">
+            <span class="badge @priClass">@Model.Priority</span>
+            <span class="badge @stClass">@Model.Status</span>
+        </div>
+    </div>
+    <div style="padding:8px 24px;">
+        <div class="detail-row">
+            <div class="detail-key">Description</div>
+            <div class="detail-val">@(Model.Description ?? "No description provided.")</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-key">Project</div>
+            <div class="detail-val">@(Model.Project?.Name ?? "—")</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-key">Assigned To</div>
+            <div class="detail-val">
+                @if (Model.AssignedTo != null)
+                {
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:28px;height:28px;border-radius:50%;background:#3b82f6;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">@Model.AssignedTo.FullName[0]</div>
+                        <span>@Model.AssignedTo.FullName</span>
+                    </div>
+                }
+                else { <span style="color:#94a3b8;">Unassigned</span> }
+            </div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-key">Due Date</div>
+            <div class="detail-val">@(Model.DueDate?.ToString("MMMM dd, yyyy") ?? "Not set")</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-key">Created</div>
+            <div class="detail-val">@Model.CreatedAt.ToString("MMMM dd, yyyy")</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-key">Last Updated</div>
+            <div class="detail-val">@Model.UpdatedAt.ToString("MMMM dd, yyyy")</div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top:16px;display:flex;gap:10px;">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary"><i class="fas fa-pen"></i> Edit Task</a>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Delete this task?')">
+        <button type="submit" class="btn btn-danger-outline"><i class="fas fa-trash"></i> Delete</button>
+    </form>
+</div>
+</div>
